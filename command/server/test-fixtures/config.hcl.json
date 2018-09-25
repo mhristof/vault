@@ -21,5 +21,5 @@
 	"pid_file":"./pidfile",
 	"raw_storage_endpoint":true,
 	"disable_sealwrap":true,
-	"disable_case_insensitive_aliases": true
+	"disable_case_insensitive_identity_names": true
 }

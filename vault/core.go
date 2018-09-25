@@ -454,6 +454,8 @@ type CoreConfig struct {
 
 	DisablePerformanceStandby bool
 
+	DisableCaseInsensitiveIdentityNames bool
+
 	AllLoggers []log.Logger
 }
 
