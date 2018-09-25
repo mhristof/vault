@@ -77,6 +77,8 @@ func TestLoadConfigFile(t *testing.T) {
 		ClusterName:        "testcluster",
 
 		PidFile: "./pidfile",
+		DisableCaseInsensitiveAliases:    true,
+		DisableCaseInsensitiveAliasesRaw: true,
 	}
 	if !reflect.DeepEqual(config, expected) {
 		t.Fatalf("expected \n\n%#v\n\n to be \n\n%#v\n\n", config, expected)
@@ -204,20 +206,22 @@ func TestLoadConfigFile_json(t *testing.T) {
 			CirconusBrokerSelectTag:            "",
 		},
 
-		MaxLeaseTTL:          10 * time.Hour,
-		MaxLeaseTTLRaw:       "10h",
-		DefaultLeaseTTL:      10 * time.Hour,
-		DefaultLeaseTTLRaw:   "10h",
-		ClusterName:          "testcluster",
-		DisableCacheRaw:      interface{}(nil),
-		DisableMlockRaw:      interface{}(nil),
-		EnableUI:             true,
-		EnableUIRaw:          true,
-		PidFile:              "./pidfile",
-		EnableRawEndpoint:    true,
-		EnableRawEndpointRaw: true,
-		DisableSealWrap:      true,
-		DisableSealWrapRaw:   true,
+		MaxLeaseTTL:                      10 * time.Hour,
+		MaxLeaseTTLRaw:                   "10h",
+		DefaultLeaseTTL:                  10 * time.Hour,
+		DefaultLeaseTTLRaw:               "10h",
+		ClusterName:                      "testcluster",
+		DisableCacheRaw:                  interface{}(nil),
+		DisableMlockRaw:                  interface{}(nil),
+		EnableUI:                         true,
+		EnableUIRaw:                      true,
+		PidFile:                          "./pidfile",
+		EnableRawEndpoint:                true,
+		EnableRawEndpointRaw:             true,
+		DisableSealWrap:                  true,
+		DisableSealWrapRaw:               true,
+		DisableCaseInsensitiveAliases:    true,
+		DisableCaseInsensitiveAliasesRaw: true,
 	}
 	if !reflect.DeepEqual(config, expected) {
 		t.Fatalf("expected \n\n%#v\n\n to be \n\n%#v\n\n", config, expected)

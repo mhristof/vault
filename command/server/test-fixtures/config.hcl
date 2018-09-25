@@ -32,3 +32,4 @@ pid_file = "./pidfile"
 raw_storage_endpoint = true
 disable_sealwrap = true
 disable_printable_check = true
+disable_case_insensitive_aliases = true

@@ -69,6 +69,9 @@ type Config struct {
 
 	DisableSealWrap    bool        `hcl:"-"`
 	DisableSealWrapRaw interface{} `hcl:"disable_sealwrap"`
+
+	DisableCaseInsensitiveAliases    bool        `hcl:"-"`
+	DisableCaseInsensitiveAliasesRaw interface{} `hcl:"disable_case_insensitive_aliases"`
 }
 
 // DevConfig is a Config that is used for dev mode of Vault.
@@ -341,6 +344,11 @@ func (c *Config) Merge(c2 *Config) *Config {
 		result.DisablePerformanceStandby = c2.DisablePerformanceStandby
 	}
 
+	result.DisableCaseInsensitiveAliases = c.DisableCaseInsensitiveAliases
+	if c2.DisableCaseInsensitiveAliases {
+		result.DisableCaseInsensitiveAliases = c2.DisableCaseInsensitiveAliases
+	}
+
 	result.DisableSealWrap = c.DisableSealWrap
 	if c2.DisableSealWrap {
 		result.DisableSealWrap = c2.DisableSealWrap
@@ -441,6 +449,12 @@ func ParseConfig(d string, logger log.Logger) (*Config, error) {
 
 	if result.DisablePerformanceStandbyRaw != nil {
 		if result.DisablePerformanceStandby, err = parseutil.ParseBool(result.DisablePerformanceStandbyRaw); err != nil {
+			return nil, err
+		}
+	}
+
+	if result.DisableCaseInsensitiveAliasesRaw != nil {
+		if result.DisableCaseInsensitiveAliases, err = parseutil.ParseBool(result.DisableCaseInsensitiveAliasesRaw); err != nil {
 			return nil, err
 		}
 	}
