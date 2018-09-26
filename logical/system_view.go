@@ -5,12 +5,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/hashicorp/vault/helper/builtinplugins"
-
 	"github.com/hashicorp/vault/helper/consts"
 	"github.com/hashicorp/vault/helper/license"
 	"github.com/hashicorp/vault/helper/pluginutil"
 	"github.com/hashicorp/vault/helper/wrapping"
+	"github.com/hashicorp/vault/logical/plugin"
 )
 
 // SystemView exposes system configuration information in a safe way
@@ -58,7 +57,7 @@ type SystemView interface {
 
 	// LookupPlugin looks into the plugin catalog for a plugin with the given
 	// name. Returns a PluginRunner or an error if a plugin can not be found.
-	LookupPlugin(context.Context, string, builtinplugins.PluginType) (*pluginutil.PluginRunner, error)
+	LookupPlugin(context.Context, string, plugin.PluginType) (*pluginutil.PluginRunner, error)
 
 	// MlockEnabled returns the configuration setting for enabling mlock on
 	// plugins.

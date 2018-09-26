@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hashicorp/vault/helper/builtinplugins"
+	"github.com/hashicorp/vault/logical/plugin"
 
 	"github.com/hashicorp/errwrap"
 
@@ -166,7 +166,7 @@ func (d dynamicSystemView) ResponseWrapData(ctx context.Context, data map[string
 
 // LookupPlugin looks for a plugin with the given name in the plugin catalog. It
 // returns a PluginRunner or an error if no plugin was found.
-func (d dynamicSystemView) LookupPlugin(ctx context.Context, name string, pluginType builtinplugins.PluginType) (*pluginutil.PluginRunner, error) {
+func (d dynamicSystemView) LookupPlugin(ctx context.Context, name string, pluginType plugin.PluginType) (*pluginutil.PluginRunner, error) {
 	if d.core == nil {
 		return nil, fmt.Errorf("system view core is nil")
 	}

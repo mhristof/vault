@@ -1,6 +1,7 @@
 package builtinplugins
 
 import (
+	"github.com/hashicorp/vault/logical/plugin"
 	"github.com/hashicorp/vault/plugins/database/cassandra"
 	"github.com/hashicorp/vault/plugins/database/hana"
 	"github.com/hashicorp/vault/plugins/database/mongodb"
@@ -25,28 +26,20 @@ var databasePlugins = map[string]BuiltinFactory{
 	"hana-database-plugin":       hana.New,
 }
 
-type PluginType int
-
-const (
-	PluginTypeCredential PluginType = iota
-	PluginTypeSecrets
-	PluginTypeDatabase
-)
-
 // BuiltinFactory is the func signature that should be returned by
 // the plugin's New() func.
 type BuiltinFactory func() (interface{}, error)
 
 // Get returns the BuiltinFactory func for a particular backend plugin
 // from the databasePlugins map.
-func Get(name string, pluginType PluginType) (BuiltinFactory, bool) {
+func Get(name string, pluginType plugin.PluginType) (BuiltinFactory, bool) {
 	searchMap := make(map[string]BuiltinFactory)
 	switch pluginType {
-	case PluginTypeCredential:
+	case plugin.PluginTypeCredential:
 		searchMap = credentialBackends
-	case PluginTypeSecrets:
+	case plugin.PluginTypeSecrets:
 		searchMap = logicalBackends
-	case PluginTypeDatabase:
+	case plugin.PluginTypeDatabase:
 		searchMap = databasePlugins
 	}
 	f, ok := searchMap[name]
