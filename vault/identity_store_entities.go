@@ -563,7 +563,7 @@ func (i *IdentityStore) handlePathEntityListCommon(ctx context.Context, req *log
 		if byID {
 			keys = append(keys, entity.ID)
 		} else {
-			keys = append(keys, entity.Name)
+			keys = append(keys, entity.NameRaw)
 		}
 		entityInfoEntry := map[string]interface{}{
 			"name": entity.Name,

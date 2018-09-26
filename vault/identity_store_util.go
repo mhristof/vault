@@ -194,6 +194,18 @@ func (i *IdentityStore) loadEntities(ctx context.Context) error {
 					continue
 				}
 
+				// Ensure that there are no entities with duplicate names
+				entityByName, err := i.MemDBEntityByName(ctx, entity.Name, false)
+				if err != nil {
+					return nil
+				}
+				if entityByName != nil && !i.core.disableCaseInsensitiveIdentityNames {
+					return fmt.Errorf(`Duplicate entity names %q and %q.
+Identity names are treated case insensitively unless
+'disable_case_insensitive_identity_names' config is set.`,
+						entity.NameRaw, entityByName.NameRaw)
+				}
+
 				// Only update MemDB and don't hit the storage again
 				err = i.upsertEntity(ctx, entity, nil, false)
 				if err != nil {
