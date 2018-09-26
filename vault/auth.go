@@ -706,6 +706,7 @@ func (c *Core) teardownCredentials(ctx context.Context) error {
 
 // newCredentialBackend is used to create and configure a new credential backend by name
 func (c *Core) newCredentialBackend(ctx context.Context, entry *MountEntry, sysView logical.SystemView, view logical.Storage) (logical.Backend, error) {
+	// TODO this should only be using the NewPlugin method
 	t := entry.Type
 	if alias, ok := credentialAliases[t]; ok {
 		t = alias

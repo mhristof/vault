@@ -50,7 +50,7 @@ func (c *Core) setupPluginCatalog() error {
 // Get retrieves a plugin with the specified name from the catalog. It first
 // looks for external plugins with this name and then looks for builtin plugins.
 // It returns a PluginRunner or an error if no plugin was found.
-func (c *PluginCatalog) Get(ctx context.Context, name string) (*pluginutil.PluginRunner, error) {
+func (c *PluginCatalog) Get(ctx context.Context, name string, pluginType builtinplugins.PluginType) (*pluginutil.PluginRunner, error) {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 
@@ -74,7 +74,7 @@ func (c *PluginCatalog) Get(ctx context.Context, name string) (*pluginutil.Plugi
 		}
 	}
 	// Look for builtin plugins
-	if factory, ok := builtinplugins.Get(name); ok {
+	if factory, ok := builtinplugins.Get(name, pluginType); ok {
 		return &pluginutil.PluginRunner{
 			Name:           name,
 			Builtin:        true,

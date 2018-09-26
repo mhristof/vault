@@ -1110,6 +1110,7 @@ func (c *Core) unloadMounts(ctx context.Context) error {
 
 // newLogicalBackend is used to create and configure a new logical backend by name
 func (c *Core) newLogicalBackend(ctx context.Context, entry *MountEntry, sysView logical.SystemView, view logical.Storage) (logical.Backend, error) {
+	// TODO this should only be using the NewPlugin method
 	t := entry.Type
 	if alias, ok := mountAliases[t]; ok {
 		t = alias

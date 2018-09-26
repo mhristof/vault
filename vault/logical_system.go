@@ -17,6 +17,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hashicorp/vault/helper/builtinplugins"
+
 	"github.com/hashicorp/errwrap"
 	log "github.com/hashicorp/go-hclog"
 	memdb "github.com/hashicorp/go-memdb"
@@ -301,7 +303,8 @@ func (b *SystemBackend) handlePluginCatalogRead(ctx context.Context, req *logica
 	if pluginName == "" {
 		return logical.ErrorResponse("missing plugin name"), nil
 	}
-	plugin, err := b.Core.pluginCatalog.Get(ctx, pluginName)
+	pluginType := d.Get("type").(builtinplugins.PluginType) // TODO this would actually need to be a string and we'd parse it
+	plugin, err := b.Core.pluginCatalog.Get(ctx, pluginName, pluginType)
 	if err != nil {
 		return nil, err
 	}
