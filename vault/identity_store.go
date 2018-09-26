@@ -311,9 +311,6 @@ func (i *IdentityStore) parseEntityFromBucketItem(ctx context.Context, item *sto
 		entity.NamespaceID = namespace.RootNamespaceID
 	}
 
-	// Entities that were created before NameRaw was introduced, should
-	// duplicate the Name as NameRaw. Persisting the entity back is not
-	// required.
 	if entity.Name != "" && entity.NameRaw == "" {
 		entity.NameRaw = entity.Name
 	}
@@ -352,6 +349,10 @@ func (i *IdentityStore) parseGroupFromBucketItem(item *storagepacker.Item) (*ide
 
 	if group.NamespaceID == "" {
 		group.NamespaceID = namespace.RootNamespaceID
+	}
+
+	if group.Name != "" && group.NameRaw == "" {
+		group.NameRaw = group.Name
 	}
 
 	return &group, nil

@@ -332,8 +332,7 @@ func (i *IdentityStore) handleEntityReadCommon(ctx context.Context, entity *iden
 
 	respData := map[string]interface{}{}
 	respData["id"] = entity.ID
-	// Respond NameRaw instead of name because NameRaw preserves the casing of
-	// name provided over the API
+	// Case sensitive name
 	respData["name"] = entity.NameRaw
 	respData["metadata"] = entity.Metadata
 	respData["merged_entity_ids"] = entity.MergedEntityIDs

@@ -73,6 +73,18 @@ func (i *IdentityStore) loadGroups(ctx context.Context) error {
 				continue
 			}
 
+			// Ensure that there are no groups with duplicate names
+			groupByName, err := i.MemDBGroupByName(ctx, group.Name, false)
+			if err != nil {
+				return err
+			}
+			if groupByName != nil && !i.core.disableCaseInsensitiveIdentityNames {
+				return fmt.Errorf(`Duplicate group names %q and %q.
+Identity names are treated case insensitively unless
+'disable_case_insensitive_identity_names' config is set.`,
+					group.NameRaw, groupByName.NameRaw)
+			}
+
 			if i.logger.IsDebug() {
 				i.logger.Debug("loading group", "name", group.Name, "id", group.ID)
 			}
@@ -923,6 +935,7 @@ func (i *IdentityStore) sanitizeAndUpsertGroup(ctx context.Context, group *ident
 		if err != nil {
 			return fmt.Errorf("failed to generate group name")
 		}
+		group.NameRaw = group.Name
 	}
 
 	// Entity metadata should always be map[string]string
@@ -1122,6 +1135,8 @@ func (i *IdentityStore) MemDBGroupByNameInTxn(ctx context.Context, txn *memdb.Tx
 		return nil, fmt.Errorf("txn is nil")
 	}
 
+	groupName = i.sanitizeName(groupName)
+
 	ns, err := namespace.FromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -1232,6 +1247,8 @@ func (i *IdentityStore) MemDBUpsertGroupInTxn(txn *memdb.Txn, group *identity.Gr
 	if group == nil {
 		return fmt.Errorf("group is nil")
 	}
+
+	group.Name = i.sanitizeName(group.Name)
 
 	if group.NamespaceID == "" {
 		group.NamespaceID = namespace.RootNamespaceID
