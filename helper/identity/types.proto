@@ -125,6 +125,9 @@ message Entity {
 	// belongs to. Do not return this value over the API when reading the
 	// entity.
 	string namespace_id = 12;
+
+	// NameRaw is the replica of the Name field with its casing preseverd
+	string name_raw = 13;
 }
 
 // Alias represents the alias that gets stored inside of the

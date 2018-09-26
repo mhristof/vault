@@ -214,6 +214,8 @@ func (i *IdentityStore) handleEntityUpdateCommon() framework.OperationFunc {
 
 		if entityName != "" {
 			entity.Name = entityName
+			// Duplicate the name provided over the API as NameRaw
+			entity.NameRaw = entityName
 		}
 
 		// Update the policies if supplied
@@ -330,7 +332,9 @@ func (i *IdentityStore) handleEntityReadCommon(ctx context.Context, entity *iden
 
 	respData := map[string]interface{}{}
 	respData["id"] = entity.ID
-	respData["name"] = entity.Name
+	// Respond NameRaw instead of name because NameRaw preserves the casing of
+	// name provided over the API
+	respData["name"] = entity.NameRaw
 	respData["metadata"] = entity.Metadata
 	respData["merged_entity_ids"] = entity.MergedEntityIDs
 	respData["policies"] = entity.Policies

@@ -39,6 +39,13 @@ func (c *Core) loadIdentityStoreArtifacts(ctx context.Context) error {
 	return nil
 }
 
+func (i *IdentityStore) sanitizeName(name string) string {
+	if i.core.disableCaseInsensitiveIdentityNames {
+		return name
+	}
+	return strings.ToLower(name)
+}
+
 func (i *IdentityStore) loadGroups(ctx context.Context) error {
 	i.logger.Debug("identity loading groups")
 	existing, err := i.groupPacker.View().List(ctx, groupBucketsPrefix)
@@ -513,6 +520,8 @@ func (i *IdentityStore) MemDBUpsertEntityInTxn(txn *memdb.Txn, entity *identity.
 		return fmt.Errorf("entity is nil")
 	}
 
+	entity.Name = i.sanitizeName(entity.Name)
+
 	if entity.NamespaceID == "" {
 		entity.NamespaceID = namespace.RootNamespaceID
 	}
@@ -590,6 +599,8 @@ func (i *IdentityStore) MemDBEntityByNameInTxn(txn *memdb.Txn, ctx context.Conte
 	if entityName == "" {
 		return nil, fmt.Errorf("missing entity name")
 	}
+
+	entityName = i.sanitizeName(entityName)
 
 	ns, err := namespace.FromContext(ctx)
 	if err != nil {
@@ -835,6 +846,7 @@ func (i *IdentityStore) sanitizeEntity(ctx context.Context, entity *identity.Ent
 		if err != nil {
 			return fmt.Errorf("failed to generate entity name")
 		}
+		entity.NameRaw = entity.Name
 	}
 
 	// Entity metadata should always be map[string]string

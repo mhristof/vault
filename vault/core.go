@@ -386,6 +386,10 @@ type Core struct {
 	// perf standby
 	disablePerfStandby bool
 
+	// disableCaseInsensitiveIdentityNames is used to preserve case for the
+	// identity related names while indexing
+	disableCaseInsensitiveIdentityNames bool
+
 	licensingStopCh chan struct{}
 
 	// Stores loggers so we can reset the level
@@ -496,39 +500,40 @@ func NewCore(conf *CoreConfig) (*Core, error) {
 
 	// Setup the core
 	c := &Core{
-		entCore:                          entCore{},
-		devToken:                         conf.DevToken,
-		physical:                         conf.Physical,
-		redirectAddr:                     conf.RedirectAddr,
-		clusterAddr:                      conf.ClusterAddr,
-		seal:                             conf.Seal,
-		router:                           NewRouter(),
-		sealed:                           new(uint32),
-		standby:                          true,
-		baseLogger:                       conf.Logger,
-		logger:                           conf.Logger.Named("core"),
-		defaultLeaseTTL:                  conf.DefaultLeaseTTL,
-		maxLeaseTTL:                      conf.MaxLeaseTTL,
-		cachingDisabled:                  conf.DisableCache,
-		clusterName:                      conf.ClusterName,
-		clusterListenerShutdownCh:        make(chan struct{}),
-		clusterListenerShutdownSuccessCh: make(chan struct{}),
-		clusterPeerClusterAddrsCache:     cache.New(3*HeartbeatInterval, time.Second),
-		enableMlock:                      !conf.DisableMlock,
-		rawEnabled:                       conf.EnableRaw,
-		replicationState:                 new(uint32),
-		rpcServerActive:                  new(uint32),
-		atomicPrimaryClusterAddrs:        new(atomic.Value),
-		atomicPrimaryFailoverAddrs:       new(atomic.Value),
-		localClusterPrivateKey:           new(atomic.Value),
-		localClusterCert:                 new(atomic.Value),
-		localClusterParsedCert:           new(atomic.Value),
-		activeNodeReplicationState:       new(uint32),
-		keepHALockOnStepDown:             new(uint32),
-		replicationFailure:               new(uint32),
-		disablePerfStandby:               true,
-		activeContextCancelFunc:          new(atomic.Value),
-		allLoggers:                       conf.AllLoggers,
+		entCore:                             entCore{},
+		devToken:                            conf.DevToken,
+		physical:                            conf.Physical,
+		redirectAddr:                        conf.RedirectAddr,
+		clusterAddr:                         conf.ClusterAddr,
+		seal:                                conf.Seal,
+		router:                              NewRouter(),
+		sealed:                              new(uint32),
+		standby:                             true,
+		baseLogger:                          conf.Logger,
+		logger:                              conf.Logger.Named("core"),
+		defaultLeaseTTL:                     conf.DefaultLeaseTTL,
+		maxLeaseTTL:                         conf.MaxLeaseTTL,
+		cachingDisabled:                     conf.DisableCache,
+		clusterName:                         conf.ClusterName,
+		clusterListenerShutdownCh:           make(chan struct{}),
+		clusterListenerShutdownSuccessCh:    make(chan struct{}),
+		clusterPeerClusterAddrsCache:        cache.New(3*HeartbeatInterval, time.Second),
+		enableMlock:                         !conf.DisableMlock,
+		rawEnabled:                          conf.EnableRaw,
+		replicationState:                    new(uint32),
+		rpcServerActive:                     new(uint32),
+		atomicPrimaryClusterAddrs:           new(atomic.Value),
+		atomicPrimaryFailoverAddrs:          new(atomic.Value),
+		localClusterPrivateKey:              new(atomic.Value),
+		localClusterCert:                    new(atomic.Value),
+		localClusterParsedCert:              new(atomic.Value),
+		activeNodeReplicationState:          new(uint32),
+		keepHALockOnStepDown:                new(uint32),
+		replicationFailure:                  new(uint32),
+		disablePerfStandby:                  true,
+		disableCaseInsensitiveIdentityNames: conf.DisableCaseInsensitiveIdentityNames,
+		activeContextCancelFunc:             new(atomic.Value),
+		allLoggers:                          conf.AllLoggers,
 	}
 
 	atomic.StoreUint32(c.sealed, 1)

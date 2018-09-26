@@ -307,6 +307,17 @@ func (i *IdentityStore) parseEntityFromBucketItem(ctx context.Context, item *sto
 		persistNeeded = true
 	}
 
+	if entity.NamespaceID == "" {
+		entity.NamespaceID = namespace.RootNamespaceID
+	}
+
+	// Entities that were created before NameRaw was introduced, should
+	// duplicate the Name as NameRaw. Persisting the entity back is not
+	// required.
+	if entity.Name != "" && entity.NameRaw == "" {
+		entity.NameRaw = entity.Name
+	}
+
 	if persistNeeded && !i.core.ReplicationState().HasState(consts.ReplicationPerformanceSecondary) {
 		entityAsAny, err := ptypes.MarshalAny(&entity)
 		if err != nil {
@@ -323,10 +334,6 @@ func (i *IdentityStore) parseEntityFromBucketItem(ctx context.Context, item *sto
 		if err != nil {
 			return nil, err
 		}
-	}
-
-	if entity.NamespaceID == "" {
-		entity.NamespaceID = namespace.RootNamespaceID
 	}
 
 	return &entity, nil
