@@ -3,6 +3,7 @@ package vault
 import (
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/go-test/deep"
@@ -10,6 +11,65 @@ import (
 	"github.com/hashicorp/vault/helper/namespace"
 	"github.com/hashicorp/vault/logical"
 )
+
+func TestIdentityStore_CaseInsensitiveGroupName(t *testing.T) {
+	ctx := namespace.RootContext(nil)
+	i, _, _ := testIdentityStoreWithGithubAuth(ctx, t)
+
+	testGroupName := "testGroupName"
+
+	// Create an group with case sensitive name
+	resp, err := i.HandleRequest(ctx, &logical.Request{
+		Path:      "group",
+		Operation: logical.UpdateOperation,
+		Data: map[string]interface{}{
+			"name": testGroupName,
+		},
+	})
+	if err != nil || (resp != nil && resp.IsError()) {
+		t.Fatalf("bad: err:%v\nresp: %#v", err, resp)
+	}
+	groupID := resp.Data["id"].(string)
+
+	// Lookup the group by ID and check that name returned is case sensitive
+	resp, err = i.HandleRequest(ctx, &logical.Request{
+		Path:      "group/id/" + groupID,
+		Operation: logical.ReadOperation,
+	})
+	if err != nil || (resp != nil && resp.IsError()) {
+		t.Fatalf("bad: err:%v\nresp: %#v", err, resp)
+	}
+	groupName := resp.Data["name"].(string)
+	if groupName != testGroupName {
+		t.Fatalf("bad group name; expected: %q, actual: %q", testGroupName, groupName)
+	}
+
+	// Lookup the group by case sensitive name
+	resp, err = i.HandleRequest(ctx, &logical.Request{
+		Path:      "group/name/" + testGroupName,
+		Operation: logical.ReadOperation,
+	})
+	if err != nil || (resp != nil && resp.IsError()) {
+		t.Fatalf("bad: err: %v\nresp: %#v", err, resp)
+	}
+	groupName = resp.Data["name"].(string)
+	if groupName != testGroupName {
+		t.Fatalf("bad group name; expected: %q, actual: %q", testGroupName, groupName)
+	}
+
+	// Lookup the group by case insensitive name
+	resp, err = i.HandleRequest(ctx, &logical.Request{
+		Path:      "group/name/" + strings.ToLower(testGroupName),
+		Operation: logical.ReadOperation,
+	})
+	if err != nil || (resp != nil && resp.IsError()) {
+		t.Fatalf("bad: err: %v\nresp: %#v", err, resp)
+	}
+	groupName = resp.Data["name"].(string)
+	if groupName != testGroupName {
+		t.Fatalf("bad group name; expected: %q, actual: %q", testGroupName, groupName)
+	}
+}
 
 func TestIdentityStore_GroupByName(t *testing.T) {
 	ctx := namespace.RootContext(nil)
