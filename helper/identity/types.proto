@@ -61,6 +61,9 @@ message Group {
 	// belongs to. Do not return this value over the API when reading the
 	// group.
 	string namespace_id = 13;
+
+	// NameRaw is the replica of the Name field with its casing preseverd
+	string name_raw = 14;
 }
 
 // Entity represents an entity that gets persisted and indexed.
